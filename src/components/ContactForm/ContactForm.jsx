@@ -8,10 +8,17 @@ import {
   PhonebookInput,
   AddButton,
 } from './ContactForm.styled';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContact } from 'components/redux/contactsSlice';
+import { getContacts } from 'components/redux/selectors';
 
-const ContactForm = ({ onSubmit, contacts }) => {
+const ContactForm = () => {
+  const dispatch = useDispatch();
+
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+
+  const contacts = useSelector(getContacts);
 
   const handleInputChange = event => {
     const { name, value } = event.currentTarget;
@@ -34,10 +41,13 @@ const ContactForm = ({ onSubmit, contacts }) => {
 
     // проверяем наличие имени которое записывается и которое уже есть в списке контактов
     // нет-записываем,есть-алерт
+
     if (contacts?.find(contact => contact.name === name)) {
       alert(`${name} is already in contacts`);
     } else {
-      onSubmit({ name, number });
+      const user = { name, number, id: shortid.generate() };
+
+      dispatch(addContact(user));
       reset();
     }
   };
@@ -93,10 +103,3 @@ const ContactForm = ({ onSubmit, contacts }) => {
 };
 
 export default ContactForm;
-
-ContactForm.propTypes = {
-  name: PropTypes.string,
-  number: PropTypes.number,
-  handleInputChange: PropTypes.func,
-  handleSubmit: PropTypes.func,
-};
